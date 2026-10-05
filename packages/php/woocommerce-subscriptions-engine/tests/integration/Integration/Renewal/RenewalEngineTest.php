@@ -252,7 +252,7 @@ class RenewalEngineTest extends EngineIntegrationTestCase {
 				'contract_id'    => $contract_id,
 				'sequence_no'    => $previous->get_sequence_no() + 1,
 				'count'          => 2,
-				'status'         => CycleStatus::pending(),
+				'status'         => new CycleStatus( CycleStatus::PENDING ),
 				'starts_at_gmt'  => '2026-02-15 00:00:00',
 				'ends_at_gmt'    => '2026-03-15 00:00:00',
 				'expected_total' => '19.99',
@@ -312,7 +312,7 @@ class RenewalEngineTest extends EngineIntegrationTestCase {
 		// SAME cycle row reclaimed (not a duplicate), now billed with the lease cleared.
 		$this->assertSame( $stalled_id, $head->get_id() );
 		$this->assertSame( 2, $head->get_count() );
-		$this->assertTrue( $head->get_status()->equals( CycleStatus::billed() ) );
+		$this->assertTrue( $head->get_status()->equals( new CycleStatus( CycleStatus::BILLED ) ) );
 		$this->assertNull( $head->get_claimed_until_gmt() );
 
 		// The schedule advances to the RECLAIMED cycle's own end (2026-03-15), not a
@@ -363,7 +363,7 @@ class RenewalEngineTest extends EngineIntegrationTestCase {
 		$head = $repo->find_chain_head( $contract_id );
 		$this->assertInstanceOf( Cycle::class, $head );
 		$this->assertSame( $claimed->get_id(), $head->get_id() );
-		$this->assertTrue( $head->get_status()->equals( CycleStatus::pending() ) );
+		$this->assertTrue( $head->get_status()->equals( new CycleStatus( CycleStatus::PENDING ) ) );
 		$this->assertSame( $live_until, $head->get_claimed_until_gmt() );
 	}
 
@@ -392,7 +392,7 @@ class RenewalEngineTest extends EngineIntegrationTestCase {
 		$this->assertInstanceOf( Cycle::class, $cycle );
 		$this->assertSame( 2, $cycle->get_sequence_no() );
 		$this->assertSame( 2, $cycle->get_count() );
-		$this->assertTrue( $cycle->get_status()->equals( CycleStatus::billed() ) );
+		$this->assertTrue( $cycle->get_status()->equals( new CycleStatus( CycleStatus::BILLED ) ) );
 		$this->assertSame( $renewal_order->get_id(), $cycle->get_order_id() );
 		$this->assertSame( '19.99000000', $cycle->get_expected_total() );
 		$this->assertSame( 'engine-tests', $cycle->get_extension_slug() );
@@ -492,7 +492,7 @@ class RenewalEngineTest extends EngineIntegrationTestCase {
 		// charge did not settle (for dunning + admin visibility).
 		$this->assertInstanceOf( Cycle::class, $cycle );
 		$this->assertSame( 2, $cycle->get_count() );
-		$this->assertTrue( $cycle->get_status()->equals( CycleStatus::failed() ) );
+		$this->assertTrue( $cycle->get_status()->equals( new CycleStatus( CycleStatus::FAILED ) ) );
 		$this->assertSame( $renewal_order->get_id(), $cycle->get_order_id() );
 
 		// The contract schedule is untouched (left for dunning), still active.
@@ -574,7 +574,7 @@ class RenewalEngineTest extends EngineIntegrationTestCase {
 		$cycle = $repo->find_chain_head( $contract_id );
 		$this->assertInstanceOf( Cycle::class, $cycle );
 		$this->assertSame( 2, $cycle->get_count() );
-		$this->assertTrue( $cycle->get_status()->equals( CycleStatus::billed() ) );
+		$this->assertTrue( $cycle->get_status()->equals( new CycleStatus( CycleStatus::BILLED ) ) );
 	}
 
 	/**
@@ -633,7 +633,7 @@ class RenewalEngineTest extends EngineIntegrationTestCase {
 					'contract_id'    => $contract_id,
 					'sequence_no'    => 1,
 					'count'          => 1,
-					'status'         => CycleStatus::billed(),
+					'status'         => new CycleStatus( CycleStatus::BILLED ),
 					'starts_at_gmt'  => '2026-01-15 00:00:00',
 					'ends_at_gmt'    => '2026-02-15 00:00:00',
 					'expected_total' => '19.99',
@@ -694,7 +694,7 @@ class RenewalEngineTest extends EngineIntegrationTestCase {
 		$head = $repo->find_chain_head( $contract_id );
 		$this->assertInstanceOf( Cycle::class, $head );
 		$this->assertSame( $stalled_id, $head->get_id() );
-		$this->assertTrue( $head->get_status()->equals( CycleStatus::billed() ) );
+		$this->assertTrue( $head->get_status()->equals( new CycleStatus( CycleStatus::BILLED ) ) );
 		$this->assertNull( $head->get_claimed_until_gmt() );
 
 		// The schedule advances to the reclaimed cycle's own end - one cadence, not skipped.
@@ -746,7 +746,7 @@ class RenewalEngineTest extends EngineIntegrationTestCase {
 		$head = $repo->find_chain_head( $contract_id );
 		$this->assertInstanceOf( Cycle::class, $head );
 		$this->assertSame( 2, $head->get_count() );
-		$this->assertTrue( $head->get_status()->equals( CycleStatus::billed() ) );
+		$this->assertTrue( $head->get_status()->equals( new CycleStatus( CycleStatus::BILLED ) ) );
 
 		$reloaded = $repo->find( $contract_id );
 		$this->assertInstanceOf( Contract::class, $reloaded );
@@ -776,7 +776,7 @@ class RenewalEngineTest extends EngineIntegrationTestCase {
 		$cycle = ( new ContractRepository() )->find_chain_head( $contract_id );
 		$this->assertInstanceOf( Cycle::class, $cycle );
 		$this->assertSame( 2, $cycle->get_count() );
-		$this->assertTrue( $cycle->get_status()->equals( CycleStatus::billed() ) );
+		$this->assertTrue( $cycle->get_status()->equals( new CycleStatus( CycleStatus::BILLED ) ) );
 	}
 
 	/**
@@ -965,7 +965,7 @@ class RenewalEngineTest extends EngineIntegrationTestCase {
 				'contract_id'    => $contract_id,
 				'sequence_no'    => $previous->get_sequence_no() + 1,
 				'count'          => 2,
-				'status'         => CycleStatus::pending(),
+				'status'         => new CycleStatus( CycleStatus::PENDING ),
 				'starts_at_gmt'  => '2026-02-15 00:00:00',
 				'ends_at_gmt'    => '2026-03-15 00:00:00',
 				'expected_total' => '19.99',
@@ -983,7 +983,7 @@ class RenewalEngineTest extends EngineIntegrationTestCase {
 
 		$head = $repo->find_chain_head( $contract_id );
 		$this->assertInstanceOf( Cycle::class, $head );
-		$this->assertTrue( $head->get_status()->equals( CycleStatus::cancelled() ) );
+		$this->assertTrue( $head->get_status()->equals( new CycleStatus( CycleStatus::CANCELLED ) ) );
 	}
 
 	/**
@@ -999,7 +999,7 @@ class RenewalEngineTest extends EngineIntegrationTestCase {
 		// Cycle 1 stays billed (only a pending head is closed by cancel).
 		$head = ( new ContractRepository() )->find_chain_head( $contract_id );
 		$this->assertInstanceOf( Cycle::class, $head );
-		$this->assertTrue( $head->get_status()->equals( CycleStatus::billed() ) );
+		$this->assertTrue( $head->get_status()->equals( new CycleStatus( CycleStatus::BILLED ) ) );
 	}
 
 
@@ -1029,7 +1029,7 @@ class RenewalEngineTest extends EngineIntegrationTestCase {
 		$cycle = $repo->find_chain_head( $contract_id );
 		$this->assertInstanceOf( Cycle::class, $cycle );
 		$this->assertSame( 2, $cycle->get_count() );
-		$this->assertTrue( $cycle->get_status()->equals( CycleStatus::processing() ) );
+		$this->assertTrue( $cycle->get_status()->equals( new CycleStatus( CycleStatus::PROCESSING ) ) );
 		// A processing cycle carries no crash-recovery lease.
 		$this->assertNull( $cycle->get_claimed_until_gmt() );
 
@@ -1064,7 +1064,7 @@ class RenewalEngineTest extends EngineIntegrationTestCase {
 		$repo            = new ContractRepository();
 		$processing_head = $repo->find_chain_head( $contract_id );
 		$this->assertInstanceOf( Cycle::class, $processing_head );
-		$this->assertTrue( $processing_head->get_status()->equals( CycleStatus::processing() ) );
+		$this->assertTrue( $processing_head->get_status()->equals( new CycleStatus( CycleStatus::PROCESSING ) ) );
 
 		// The async confirmation arrives: the order is paid. Drive completion as the listener would.
 		$order->payment_complete();
@@ -1074,7 +1074,7 @@ class RenewalEngineTest extends EngineIntegrationTestCase {
 
 		$head = $repo->find_chain_head( $contract_id );
 		$this->assertInstanceOf( Cycle::class, $head );
-		$this->assertTrue( $head->get_status()->equals( CycleStatus::billed() ) );
+		$this->assertTrue( $head->get_status()->equals( new CycleStatus( CycleStatus::BILLED ) ) );
 
 		$reloaded = $repo->find( $contract_id );
 		$this->assertInstanceOf( Contract::class, $reloaded );
@@ -1084,7 +1084,7 @@ class RenewalEngineTest extends EngineIntegrationTestCase {
 		$engine->complete_from_order( $paid_order );
 		$billed_head = $repo->find_chain_head( $contract_id );
 		$this->assertInstanceOf( Cycle::class, $billed_head );
-		$this->assertTrue( $billed_head->get_status()->equals( CycleStatus::billed() ) );
+		$this->assertTrue( $billed_head->get_status()->equals( new CycleStatus( CycleStatus::BILLED ) ) );
 	}
 
 	/**
@@ -1110,7 +1110,7 @@ class RenewalEngineTest extends EngineIntegrationTestCase {
 		$head = $repo->find_chain_head( $contract_id );
 		$this->assertInstanceOf( Cycle::class, $head );
 		$this->assertSame( 2, $head->get_count() );
-		$this->assertTrue( $head->get_status()->equals( CycleStatus::billed() ) );
+		$this->assertTrue( $head->get_status()->equals( new CycleStatus( CycleStatus::BILLED ) ) );
 
 		// The scheduled path before cycle 2's period ends: selection skips, so nothing advances.
 		$ahead = $this->run_scheduled_renewal( $contract_id, new \DateTimeImmutable( '2026-03-01 00:00:00', new \DateTimeZone( 'UTC' ) ) );
@@ -1148,7 +1148,7 @@ class RenewalEngineTest extends EngineIntegrationTestCase {
 		$head = ( new ContractRepository() )->find_chain_head( $contract_id );
 		$this->assertInstanceOf( Cycle::class, $head );
 		$this->assertSame( 2, $head->get_count() );
-		$this->assertTrue( $head->get_status()->equals( CycleStatus::billed() ) );
+		$this->assertTrue( $head->get_status()->equals( new CycleStatus( CycleStatus::BILLED ) ) );
 	}
 
 	/**
@@ -1177,7 +1177,7 @@ class RenewalEngineTest extends EngineIntegrationTestCase {
 		$cycle = $repo->find_chain_head( $contract_id );
 		$this->assertInstanceOf( Cycle::class, $cycle );
 		$this->assertSame( 2, $cycle->get_count() );
-		$this->assertTrue( $cycle->get_status()->equals( CycleStatus::billed() ) );
+		$this->assertTrue( $cycle->get_status()->equals( new CycleStatus( CycleStatus::BILLED ) ) );
 
 		// Schedule preserved: cycle 2 runs from cycle 1's end (2026-02-15), so next payment is one
 		// cadence on from that (2026-03-15) - not one cadence from the manual-renewal moment.
@@ -1209,7 +1209,7 @@ class RenewalEngineTest extends EngineIntegrationTestCase {
 		$failed = $repo->find_chain_head( $contract_id );
 		$this->assertInstanceOf( Cycle::class, $failed );
 		$this->assertSame( 2, $failed->get_count() );
-		$this->assertTrue( $failed->get_status()->equals( CycleStatus::failed() ) );
+		$this->assertTrue( $failed->get_status()->equals( new CycleStatus( CycleStatus::FAILED ) ) );
 
 		// The customer fixes their payment method; the same gateway now approves the retry.
 		remove_all_actions( 'woocommerce_subscriptions_engine_scheduled_payment_' . self::GATEWAY_DECLINING );
@@ -1234,7 +1234,7 @@ class RenewalEngineTest extends EngineIntegrationTestCase {
 		$head = $repo->find_chain_head( $contract_id );
 		$this->assertInstanceOf( Cycle::class, $head );
 		$this->assertSame( 2, $head->get_count() );
-		$this->assertTrue( $head->get_status()->equals( CycleStatus::billed() ) );
+		$this->assertTrue( $head->get_status()->equals( new CycleStatus( CycleStatus::BILLED ) ) );
 
 		// The failed order was reused, not duplicated.
 		$this->assertCount( 1, $this->renewal_orders_for_cycle( $contract_id, 2 ) );
@@ -1294,7 +1294,7 @@ class RenewalEngineTest extends EngineIntegrationTestCase {
 
 		$head = $repo->find_chain_head( $contract_id );
 		$this->assertInstanceOf( Cycle::class, $head );
-		$this->assertTrue( $head->get_status()->equals( CycleStatus::billed() ) );
+		$this->assertTrue( $head->get_status()->equals( new CycleStatus( CycleStatus::BILLED ) ) );
 	}
 
 	/**
@@ -1326,7 +1326,7 @@ class RenewalEngineTest extends EngineIntegrationTestCase {
 
 		$head = $repo->find_chain_head( $contract_id );
 		$this->assertInstanceOf( Cycle::class, $head );
-		$this->assertTrue( $head->get_status()->equals( CycleStatus::billed() ) );
+		$this->assertTrue( $head->get_status()->equals( new CycleStatus( CycleStatus::BILLED ) ) );
 		$this->assertSame( $draft->get_id(), $head->get_order_id(), 'The cycle link is healed from the meta match.' );
 	}
 
@@ -1358,7 +1358,7 @@ class RenewalEngineTest extends EngineIntegrationTestCase {
 		$head = ( new ContractRepository() )->find_chain_head( $contract_id );
 		$this->assertInstanceOf( Cycle::class, $head );
 		$this->assertSame( 2, $head->get_count() );
-		$this->assertTrue( $head->get_status()->equals( CycleStatus::billed() ) );
+		$this->assertTrue( $head->get_status()->equals( new CycleStatus( CycleStatus::BILLED ) ) );
 		$this->assertSame( $renewal_order->get_id(), $head->get_order_id(), 'The cycle is linked to its own order, not the stray.' );
 
 		$stray_after = wc_get_order( $stray->get_id() );
@@ -1440,7 +1440,7 @@ class RenewalEngineTest extends EngineIntegrationTestCase {
 
 		$head = $repo->find_chain_head( $contract_id );
 		$this->assertInstanceOf( Cycle::class, $head );
-		$this->assertTrue( $head->get_status()->equals( CycleStatus::pending() ), 'The linked head is not settled by a rogue order.' );
+		$this->assertTrue( $head->get_status()->equals( new CycleStatus( CycleStatus::PENDING ) ), 'The linked head is not settled by a rogue order.' );
 		$this->assertSame( $order_a->get_id(), $head->get_order_id() );
 	}
 
@@ -1470,7 +1470,7 @@ class RenewalEngineTest extends EngineIntegrationTestCase {
 
 		$head = $repo->find_chain_head( $contract_id );
 		$this->assertInstanceOf( Cycle::class, $head );
-		$this->assertTrue( $head->get_status()->equals( CycleStatus::pending() ), 'No settlement happens from a stale order copy.' );
+		$this->assertTrue( $head->get_status()->equals( new CycleStatus( CycleStatus::PENDING ) ), 'No settlement happens from a stale order copy.' );
 	}
 
 	/**
@@ -1546,14 +1546,14 @@ class RenewalEngineTest extends EngineIntegrationTestCase {
 		$repo = new ContractRepository();
 		$head = $repo->find_chain_head( $contract_id );
 		$this->assertInstanceOf( Cycle::class, $head );
-		$this->assertTrue( $head->get_status()->equals( CycleStatus::processing() ) );
+		$this->assertTrue( $head->get_status()->equals( new CycleStatus( CycleStatus::PROCESSING ) ) );
 
 		// An admin marks the order paid by hand; the status-transition listener settles.
 		$renewal_order->update_status( 'processing' );
 
 		$settled = $repo->find_chain_head( $contract_id );
 		$this->assertInstanceOf( Cycle::class, $settled );
-		$this->assertTrue( $settled->get_status()->equals( CycleStatus::billed() ), 'The manual paid transition bills the cycle.' );
+		$this->assertTrue( $settled->get_status()->equals( new CycleStatus( CycleStatus::BILLED ) ), 'The manual paid transition bills the cycle.' );
 
 		// The schedule advanced to the billed cycle's own period end.
 		$reloaded = $repo->find( $contract_id );
@@ -1599,7 +1599,7 @@ class RenewalEngineTest extends EngineIntegrationTestCase {
 
 		$head = ( new ContractRepository() )->find_chain_head( $contract_id );
 		$this->assertInstanceOf( Cycle::class, $head );
-		$this->assertTrue( $head->get_status()->equals( CycleStatus::billed() ) );
+		$this->assertTrue( $head->get_status()->equals( new CycleStatus( CycleStatus::BILLED ) ) );
 		$this->assertSame( '39.98000000', $head->get_expected_total() );
 	}
 
@@ -1770,7 +1770,7 @@ class RenewalEngineTest extends EngineIntegrationTestCase {
 				'contract_id'    => $contract_id,
 				'sequence_no'    => $previous->get_sequence_no() + 1,
 				'count'          => 2,
-				'status'         => CycleStatus::pending(),
+				'status'         => new CycleStatus( CycleStatus::PENDING ),
 				'starts_at_gmt'  => '2026-02-15 00:00:00',
 				'ends_at_gmt'    => '2026-03-15 00:00:00',
 				'expected_total' => '19.99',
